@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Transcript Downloader</title>
+  <style>
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0 0 16px 0;
+      color: #202124;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    .status.success {
+      background: #e6f4ea;
+      color: #137333;
+      border: 1px solid #c6e1c6;
+    }
+
+    .status.error {
+      background: #fce8e6;
+      color: #c5221f;
+      border: 1px solid #f4c7c3;
+    }
+
+    .status.info {
+      background: #e8f0fe;
+      color: #1967d2;
+      border: 1px solid #d2e3fc;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1557b0;
+    }
+
+    button:disabled {
+      background: #dadce0;
+      cursor: not-allowed;
+    }
+
+    .info {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #dadce0;
+      font-size: 12px;
+      color: #5f6368;
+    }
+
+    .info p {
+      margin: 8px 0;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>📥 Transcript Downloader</h1>
+  
+  <div id="status" class="status info">
+    <span class="loading"></span>Checking for transcript...
+  </div>
+
+  <button id="downloadBtn" disabled>Download Transcript</button>
+
+  <div class="info">
+    <p><strong>How to use:</strong></p>
+    <p>1. Open a video in Google Drive</p>
+    <p>2. Enable captions/transcript if available</p>
+    <p>3. Click the download button</p>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
