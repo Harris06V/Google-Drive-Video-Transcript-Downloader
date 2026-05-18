@@ -400,13 +400,22 @@ async function downloadTranscript(format = 'timestamped') {
 function createDownloadButton() {
   if (downloadButton) return;
 
-  downloadButton = document.createElement('button');
-  downloadButton.textContent = '📥 Download Transcript';
-  downloadButton.style.cssText = `
+  // Create container for buttons
+  const container = document.createElement('div');
+  container.style.cssText = `
     position: fixed;
     bottom: 20px;
     right: 20px;
     z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  `;
+
+  // Create timestamped button
+  const timestampedBtn = document.createElement('button');
+  timestampedBtn.textContent = '📥 Download with Timestamps';
+  timestampedBtn.style.cssText = `
     padding: 12px 20px;
     background: #1a73e8;
     color: white;
@@ -418,19 +427,52 @@ function createDownloadButton() {
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     font-family: 'Google Sans', Roboto, Arial, sans-serif;
     transition: background 0.2s;
+    white-space: nowrap;
   `;
 
-  downloadButton.addEventListener('mouseenter', () => {
-    downloadButton.style.background = '#1557b0';
+  timestampedBtn.addEventListener('mouseenter', () => {
+    timestampedBtn.style.background = '#1557b0';
   });
 
-  downloadButton.addEventListener('mouseleave', () => {
-    downloadButton.style.background = '#1a73e8';
+  timestampedBtn.addEventListener('mouseleave', () => {
+    timestampedBtn.style.background = '#1a73e8';
   });
 
-  downloadButton.addEventListener('click', downloadTranscript);
+  timestampedBtn.addEventListener('click', () => downloadTranscript('timestamped'));
 
-  document.body.appendChild(downloadButton);
+  // Create plain text button
+  const plainBtn = document.createElement('button');
+  plainBtn.textContent = '📄 Download Plain Text';
+  plainBtn.style.cssText = `
+    padding: 12px 20px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    font-family: 'Google Sans', Roboto, Arial, sans-serif;
+    transition: background 0.2s;
+    white-space: nowrap;
+  `;
+
+  plainBtn.addEventListener('mouseenter', () => {
+    plainBtn.style.background = '#1557b0';
+  });
+
+  plainBtn.addEventListener('mouseleave', () => {
+    plainBtn.style.background = '#1a73e8';
+  });
+
+  plainBtn.addEventListener('click', () => downloadTranscript('plain'));
+
+  container.appendChild(timestampedBtn);
+  container.appendChild(plainBtn);
+  document.body.appendChild(container);
+  
+  downloadButton = container;
 }
 
 // Function to check if we're on a video page with transcript
@@ -494,7 +536,8 @@ if (document.readyState === 'loading') {
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'downloadTranscript') {
-    downloadTranscript().then(success => {
+    const format = request.format || 'timestamped';
+    downloadTranscript(format).then(success => {
       sendResponse({ success });
     });
   } else if (request.action === 'checkTranscript') {

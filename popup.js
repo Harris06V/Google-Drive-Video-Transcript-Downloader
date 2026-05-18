@@ -1,7 +1,8 @@
 // Popup script for Google Drive Video Transcript Downloader
 
 const statusDiv = document.getElementById('status');
-const downloadBtn = document.getElementById('downloadBtn');
+const downloadTimestampedBtn = document.getElementById('downloadTimestampedBtn');
+const downloadPlainBtn = document.getElementById('downloadPlainBtn');
 
 // Check if we're on a Google Drive page
 async function checkPage() {
@@ -11,7 +12,8 @@ async function checkPage() {
     if (!tab.url.includes('drive.google.com')) {
       statusDiv.className = 'status error';
       statusDiv.textContent = '❌ Please open a Google Drive video page';
-      downloadBtn.disabled = true;
+      downloadTimestampedBtn.disabled = true;
+      downloadPlainBtn.disabled = true;
       return;
     }
 
@@ -20,41 +22,47 @@ async function checkPage() {
       if (chrome.runtime.lastError) {
         statusDiv.className = 'status error';
         statusDiv.textContent = '❌ Please refresh the page and try again';
-        downloadBtn.disabled = true;
+        downloadTimestampedBtn.disabled = true;
+        downloadPlainBtn.disabled = true;
         return;
       }
 
       if (response && response.hasTranscript) {
         statusDiv.className = 'status success';
         statusDiv.textContent = `✅ Transcript found (${response.lineCount} lines)`;
-        downloadBtn.disabled = false;
+        downloadTimestampedBtn.disabled = false;
+        downloadPlainBtn.disabled = false;
       } else {
         statusDiv.className = 'status error';
         statusDiv.textContent = '❌ No transcript found. Make sure captions are enabled.';
-        downloadBtn.disabled = true;
+        downloadTimestampedBtn.disabled = true;
+        downloadPlainBtn.disabled = true;
       }
     });
   } catch (error) {
     statusDiv.className = 'status error';
     statusDiv.textContent = '❌ Error checking page';
-    downloadBtn.disabled = true;
+    downloadTimestampedBtn.disabled = true;
+    downloadPlainBtn.disabled = true;
   }
 }
 
-// Download transcript
-downloadBtn.addEventListener('click', async () => {
-  downloadBtn.disabled = true;
+// Download transcript with format
+async function downloadWithFormat(format) {
+  downloadTimestampedBtn.disabled = true;
+  downloadPlainBtn.disabled = true;
   statusDiv.className = 'status info';
   statusDiv.innerHTML = '<span class="loading"></span>Downloading...';
 
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     
-    chrome.tabs.sendMessage(tab.id, { action: 'downloadTranscript' }, (response) => {
+    chrome.tabs.sendMessage(tab.id, { action: 'downloadTranscript', format }, (response) => {
       if (chrome.runtime.lastError || !response || !response.success) {
         statusDiv.className = 'status error';
         statusDiv.textContent = '❌ Download failed';
-        downloadBtn.disabled = false;
+        downloadTimestampedBtn.disabled = false;
+        downloadPlainBtn.disabled = false;
         return;
       }
 
@@ -68,9 +76,16 @@ downloadBtn.addEventListener('click', async () => {
   } catch (error) {
     statusDiv.className = 'status error';
     statusDiv.textContent = '❌ Download failed';
-    downloadBtn.disabled = false;
+    downloadTimestampedBtn.disabled = false;
+    downloadPlainBtn.disabled = false;
   }
-});
+}
+
+// Download with timestamps
+downloadTimestampedBtn.addEventListener('click', () => downloadWithFormat('timestamped'));
+
+// Download plain text
+downloadPlainBtn.addEventListener('click', () => downloadWithFormat('plain'));
 
 // Initialize
 checkPage();

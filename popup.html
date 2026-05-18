@@ -64,6 +64,10 @@
       cursor: not-allowed;
     }
 
+    #downloadPlainBtn {
+      margin-top: 8px;
+    }
+
     .info {
       margin-top: 16px;
       padding-top: 16px;
@@ -101,13 +105,14 @@
     <span class="loading"></span>Checking for transcript...
   </div>
 
-  <button id="downloadBtn" disabled>Download Transcript</button>
+  <button id="downloadTimestampedBtn" disabled>Download with Timestamps</button>
+  <button id="downloadPlainBtn" disabled>Download Plain Text</button>
 
   <div class="info">
     <p><strong>How to use:</strong></p>
     <p>1. Open a video in Google Drive</p>
     <p>2. Enable captions/transcript if available</p>
-    <p>3. Click the download button</p>
+    <p>3. Choose download format</p>
   </div>
 
   <script src="popup.js"></script>
